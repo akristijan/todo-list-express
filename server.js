@@ -9,22 +9,27 @@ let db,
     dbConnectionStr = process.env.DB_STRING,
     dbName = 'todo'
 
+// DB connection
 MongoClient.connect(dbConnectionStr, { useUnifiedTopology: true })
     .then(client => {
         console.log(`Connected to ${dbName} Database`)
         db = client.db(dbName)
     })
-    
+
+//Middleware
 app.set('view engine', 'ejs')
 app.use(express.static('public'))
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
 
 
-app.get('/',async (request, response)=>{
+app.get('/', async (request, response)=>{
+    //get all todo items from DB
     const todoItems = await db.collection('todos').find().toArray()
+    // get number of non-completed todo tasks
     const itemsLeft = await db.collection('todos').countDocuments({completed: false})
     response.render('index.ejs', { items: todoItems, left: itemsLeft })
+    
     // db.collection('todos').find().toArray()
     // .then(data => {
     //     db.collection('todos').countDocuments({completed: false})

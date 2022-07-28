@@ -15,18 +15,18 @@ Array.from(itemCompleted).forEach((element)=>{//creating an array from our selec
 })
 
 async function deleteItem(){
-    const itemText = this.parentNode.childNodes[1].innerText
+    const itemText = this.parentNode.childNodes[1].innerText//looks inside of the list item and grabs only the inner text within the list span
     try{
-        const response = await fetch('deleteItem', {
-            method: 'delete',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({
-              'itemFromJS': itemText
+        const response = await fetch('deleteItem', { //creates a response variable that waits on a fetch to get data from the result of deletItem route
+            method: 'delete', // sets the CRUD method for route
+            headers: {'Content-Type': 'application/json'}, //sepecifying the type of content expected, which is JSON  
+            body: JSON.stringify({ // declare the message being passed, and stringify the content
+              'itemFromJS': itemText //setting the content of the body to the innner text of the list item, and naming it ItemFromJS
             })
           })
-        const data = await response.json()
-        console.log(data)
-        location.reload()
+        const data = await response.json() // waiting on JSON from response to be converted
+        console.log(data)//log result to the console
+        location.reload()// reload the page to update what is displayed
 
     }catch(err){
         console.log(err)

@@ -18,17 +18,18 @@ MongoClient.connect(dbConnectionStr, { useUnifiedTopology: true })//Creating a c
     })
 
 //Middleware
-app.set('view engine', 'ejs')
-app.use(express.static('public'))
-app.use(express.urlencoded({ extended: true }))
-app.use(express.json())
+app.set('view engine', 'ejs') //sets ejs as default render method
+app.use(express.static('public'))//sets default folder for static assets
+app.use(express.urlencoded({ extended: true }))// tells express to decode and encode URLs where the header matches the content. Supports array and objects
+app.use(express.json())//Parses JSON content from incoming requests
 
 
-app.get('/', async (request, response)=>{
-    //get all todo items from DB
+app.get('/', async (request, response)=>{ //starts a GET method when the root route is passed in, sets up req and res params
+    //sets a constant and awaits  all todo items from DB
     const todoItems = await db.collection('todos').find().toArray()
-    // get number of non-completed todo tasks
+    //sets a constant and awaits number of non-completed todo tasks
     const itemsLeft = await db.collection('todos').countDocuments({completed: false})
+    //rendering ejs file and passing through the db items and the count remaining inside of an object
     response.render('index.ejs', { items: todoItems, left: itemsLeft })
     
     // db.collection('todos').find().toArray()
@@ -41,27 +42,27 @@ app.get('/', async (request, response)=>{
     // .catch(error => console.error(error))
 })
 
-app.post('/addTodo', (request, response) => {
-    db.collection('todos').insertOne({thing: request.body.todoItem, completed: false})
-    .then(result => {
-        console.log('Todo Added')
-        response.redirect('/')
+app.post('/addTodo', (request, response) => { //starts a POST method when the route addTodo is passed in, sets up req and res params
+    db.collection('todos').insertOne({thing: request.body.todoItem, completed: false})  //insert a new item into todos collection, gives it value completed false by default
+    .then(result => {//if insert is successful do something
+        console.log('Todo Added')//log to the console
+        response.redirect('/') //gets rid of addTodo route and redirect to home page
     })
     .catch(error => console.error(error))
 })
 
-app.put('/markComplete', (request, response) => {
-    db.collection('todos').updateOne({thing: request.body.itemFromJS},{
+app.put('/markComplete', (request, response) => {//starts a PUT method when the route markComplete is passed in, sets up req and res params
+    db.collection('todos').updateOne({thing: request.body.itemFromJS},{//look in the db for one item matching the name of item passed in from main.js file that was clicked on
         $set: {
-            completed: true
+            completed: true //set completed status to true
           }
     },{
-        sort: {_id: -1},
-        upsert: false
+        sort: {_id: -1},//moves item to the bottom of the list 
+        upsert: false //prevents insertion if item does not exist already 
     })
     .then(result => {
         console.log('Marked Complete')
-        response.json('Marked Complete')
+        response.json('Marked Complete') //sending response back to the sender
     })
     .catch(error => console.error(error))
 
@@ -84,16 +85,16 @@ app.put('/markUnComplete', (request, response) => {
 
 })
 
-app.delete('/deleteItem', (request, response) => {
-    db.collection('todos').deleteOne({thing: request.body.itemFromJS})
-    .then(result => {
+app.delete('/deleteItem', (request, response) => {//starts delete method when the deleteItem route is passed 
+    db.collection('todos').deleteOne({thing: request.body.itemFromJS}) //look in the db for one item matching the name of item passed in from main.js file that was clicked on
+    .then(result => { //starts then if delete was successful
         console.log('Todo Deleted')
-        response.json('Todo Deleted')
+        response.json('Todo Deleted')//sending a response back to the sender
     })
     .catch(error => console.error(error))
 
 })
 
-app.listen(process.env.PORT || PORT, ()=>{
+app.listen(process.env.PORT || PORT, ()=>{ //setting up which port we will be listening on either the port from the .env
     console.log(`Server running on port ${PORT}`)
 })

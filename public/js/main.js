@@ -28,27 +28,28 @@ async function deleteItem(){
         console.log(data)//log result to the console
         location.reload()// reload the page to update what is displayed
 
-    }catch(err){
+    }
+    catch(err){
         console.log(err)
     }
 }
 
 async function markComplete(){
-    const itemText = this.parentNode.childNodes[1].innerText
+    const itemText = this.parentNode.childNodes[1].innerText // grab the inner text within the list span from inside of the list item
     try{
-        const response = await fetch('markComplete', {
-            method: 'put',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({
-                'itemFromJS': itemText
+        const response = await fetch('markComplete', { // creates response variable that waits on a fetch to grab the data from result of markComplete rout 
+            method: 'put', // sets UPDATE the CRUD method for route
+            headers: {'Content-Type': 'application/json'}, // set the type of content expected (JSON format)
+            body: JSON.stringify({ //declare the message being passed, then stringify the content
+                'itemFromJS': itemText // setting the content of the body to the innner text and naming it itemFromJS
             })
           })
-        const data = await response.json()
-        console.log(data)
-        location.reload()
+        const data = await response.json() //create data variable that waits for JSON to be converted to JS object
+        console.log(data)// log result to the console
+        location.reload() // reload the page to update what is displayed
 
-    }catch(err){
-        console.log(err)
+    }catch(err){//if an error occurs, pass the error into the catch block
+        console.log(err)//log the error to the console
     }
 }
 
